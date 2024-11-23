@@ -85,15 +85,23 @@ while cap.isOpened():
             os.makedirs("screenshots")
         if not os.path.exists("masks"):
             os.makedirs("masks")
+        if not os.path.exists("shapes"):
+            os.makedirs("shapes")
         # Guardar la imagen con trayectoria
         cv2.imwrite(f"screenshots/screenshot{cont}.png", frame)
+        mask = f.create_mask(frame, lower_blue, upper_blue)
         cv2.imwrite(
             f"masks/mask{cont}.png",
-            f.create_mask(frame, lower_blue, upper_blue),
+            mask,
         )
+
+        # Detectar las formas geométricas en la imagen guardada
+        img_with_shapes, fig = f.detect_geometric_shapes(mask)
+        cv2.imwrite(f"shapes/shape{cont}.png", img_with_shapes)
 
         # Limpiar la trayectoria
         trajectory.clear()
+        print(f"Figura detectada: {fig}")
 
 cap.release()
 cv2.destroyAllWindows()
