@@ -18,7 +18,12 @@ kalman.measurementMatrix = np.array([[1, 0, 0, 0], [0, 1, 0, 0]], np.float32)
 kalman.transitionMatrix = np.array(
     [[1, 0, 1, 0], [0, 1, 0, 1], [0, 0, 1, 0], [0, 0, 0, 1]], np.float32
 )
-kalman.processNoiseCov = np.eye(4, dtype=np.float32) * 0.03
+kalman.processNoiseCov = (
+    np.eye(4, dtype=np.float32) * 0.03
+)  # Incrementar para suavizar más
+kalman.measurementNoiseCov = (
+    np.eye(2, dtype=np.float32) * 0.1
+)  # Reducir para confiar más en predicciones
 
 cap = cv2.VideoCapture(0)
 cont = 0
@@ -28,6 +33,7 @@ upper_blue = np.array([130, 255, 255])  # H:130, S:255, V:255
 
 while cap.isOpened():
     ret, frame = cap.read()
+    frame = cv2.flip(frame, 1)
     if not ret:
         break
 
