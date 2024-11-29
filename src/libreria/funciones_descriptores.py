@@ -1,11 +1,10 @@
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-from Lab_Project.src.libreria.utils import *
-from bow import BoW
-from dataset import Dataset
-from image_classifier import ImageClassifier
-
+from libreria.utils import *
+from libreria.bow import BoW
+from libreria.dataset import Dataset
+from libreria.image_classifier import ImageClassifier
 
 
 def show_image(imgs, num=None):
@@ -167,12 +166,21 @@ def compare_images(input_image, reference_images, detector, matcher):
     # Extraer keypoints y descriptores de la imagen de entrada
     _, input_descriptors = computeKeypointsAndDescriptors(input_image)
 
+    input_descriptors = input_descriptors.astype(np.float32)
+    print(input_descriptors.shape)
+    print("input_descriptors", len(input_descriptors))
     best_match_count = 0
     best_match_index = -1
 
     # Iterar sobre las imágenes de referencia
     for i, ref_image in enumerate(reference_images):
         _, ref_descriptors = computeKeypointsAndDescriptors(ref_image)
+        print(ref_descriptors.shape)
+        print(f"Tipo de descriptor1: {input_descriptors.dtype}")
+        ref_descriptors = ref_descriptors.astype(np.float32)
+        print(f"Tipo de descriptor2: {ref_descriptors.dtype}")
+        print("ref_descriptors", len(ref_descriptors))
+
         matches = match_descriptors(input_descriptors, ref_descriptors, matcher)
 
         # Filtrar coincidencias con un umbral de calidad

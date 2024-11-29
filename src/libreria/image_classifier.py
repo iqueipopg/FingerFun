@@ -6,9 +6,9 @@ import time
 from tqdm import tqdm  # Progress bar
 from typing import List, Tuple
 
-from bow import BoW
-from dataset import Dataset
-from results import Results
+from libreria.bow import BoW
+from libreria.dataset import Dataset
+from libreria.results import Results
 
 
 class ImageClassifier:
@@ -43,10 +43,14 @@ class ImageClassifier:
 
         # Initialize dictionary from the BoW object
         self._initialize_feature_matcher(matcher_type)
-        self._dictionary = cv2.BOWImgDescriptorExtractor(bow.feature_extractor, self._matcher)
+        self._dictionary = cv2.BOWImgDescriptorExtractor(
+            bow.feature_extractor, self._matcher
+        )
         self._dictionary.setVocabulary(bow.vocabulary)
 
-    def train(self, training_set: List[str], iterations: int = 100, epsilon: float = 1e-6):
+    def train(
+        self, training_set: List[str], iterations: int = 100, epsilon: float = 1e-6
+    ):
         """Trains a SVM to classify a set of images.
 
         Args:
@@ -83,7 +87,9 @@ class ImageClassifier:
         print("\nTraining SVM...")
 
         self._classifier = cv2.ml.SVM_create()
-        self._classifier.setTermCriteria((cv2.TERM_CRITERIA_MAX_ITER | cv2.TERM_CRITERIA_EPS, iterations, epsilon))
+        self._classifier.setTermCriteria(
+            (cv2.TERM_CRITERIA_MAX_ITER | cv2.TERM_CRITERIA_EPS, iterations, epsilon)
+        )
         self._classifier.setType(cv2.ml.SVM_C_SVC)  # C-Support Vector Classification
 
         # Kernel type
@@ -97,7 +103,9 @@ class ImageClassifier:
 
         # Train an SVM with optimal parameters
         self._classifier.trainAuto(
-            np.array(train_desc, np.float32), cv2.ml.ROW_SAMPLE, np.array(train_labels, np.int32)
+            np.array(train_desc, np.float32),
+            cv2.ml.ROW_SAMPLE,
+            np.array(train_labels, np.int32),
         )
 
     def predict(
@@ -128,12 +136,18 @@ class ImageClassifier:
                 test_labels.append(self._labels.get(Dataset.get_label(path)))
 
         # Predict categories
-        predicted_labels = (self._classifier.predict(np.array(test_desc, np.float32))[1]).ravel().tolist()
+        predicted_labels = (
+            (self._classifier.predict(np.array(test_desc, np.float32))[1])
+            .ravel()
+            .tolist()
+        )
         predicted_labels = [int(label) for label in predicted_labels]
 
         # Format results and compute classification statistics
         results = Results(self._labels, dataset_name=dataset_name)
-        accuracy, confusion_matrix, classification = results.compute(dataset, test_labels, predicted_labels)
+        accuracy, confusion_matrix, classification = results.compute(
+            dataset, test_labels, predicted_labels
+        )
         results.print(accuracy, confusion_matrix)
 
         if save:
@@ -186,7 +200,9 @@ class ImageClassifier:
             search_params = dict(checks=50)
             self._matcher = cv2.FlannBasedMatcher(index_params, search_params)
         else:
-            raise ValueError("Matcher type not supported. Possible values are 'Brute-Force' and 'FLANN'.")
+            raise ValueError(
+                "Matcher type not supported. Possible values are 'Brute-Force' and 'FLANN'."
+            )
 
     def _extract_bow_features(self, image_path: str) -> np.ndarray:
         """Extract features using a BoW dictionary.
@@ -199,4 +215,6 @@ class ImageClassifier:
 
         """
         image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
-        return self._dictionary.compute(image, self._bow.feature_extractor.detect(image))
+        return self._dictionary.compute(
+            image, self._bow.feature_extractor.detect(image)
+        )
