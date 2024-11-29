@@ -1,5 +1,8 @@
 import cv2
 import mediapipe as mp
+import os
+import random
+
 
 # # Cargar las imágenes de referencia
 # triangle_img = cv2.imread("triangle.png")  # Cargar la imagen del triángulo
@@ -120,3 +123,57 @@ def is_fist(hand_landmarks, mp_hands, threshold=0.1):
 
     # Considerar que el puño está cerrado si 4 dedos están doblados
     return closed_fingers >= 4
+
+
+# GESTIONAR NIVELES
+
+
+def gestionar_niveles(nivel, opencv_images):
+    if nivel <= 6:
+        # Generar una lista de imágenes aleatorias
+        lista = generar_imagenes_random(nivel, opencv_images)
+        show_image(lista, len(lista))
+        print("Repite las imágenes mostradas para continuar al siguiente nivel.")
+    else:
+        print("¡Felicidades! Has completado el juego.")
+
+
+def generar_imagenes_random(nivel, opencv_images):
+    lista = []
+    for i in range(nivel):
+        num = random.randint(0, len(opencv_images) - 1)
+        imagen = opencv_images[num]
+        lista.append(imagen)
+    return lista
+
+
+def show_image(imgs, num=None):
+    if num is not None:
+        imgs = imgs[:num]
+
+    for i, img in enumerate(imgs):
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        img_copy = img.copy()
+        cv2.putText(
+            img_copy,
+            f"Figura: {i + 1}",
+            (5, 25),
+            font,
+            1,
+            (255, 255, 255),
+            3,
+            cv2.LINE_AA,
+        )
+        cv2.imshow(f"Imagen {i + 1}", img_copy)
+        cv2.waitKey(1500)
+        cv2.destroyWindow(f"Imagen {i + 1}")
+
+
+def load_images_from_folder(folder):
+    folder = os.path.join(".", "images", "figures")
+    images = []
+    for filename in os.listdir(folder):
+        img = cv2.imread(os.path.join(folder, filename))
+        if img is not None:
+            images.append(img)
+    return images

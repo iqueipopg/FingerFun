@@ -1,15 +1,15 @@
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-from utils import *
-from bow import BoW
-from dataset import Dataset
-from image_classifier import ImageClassifier
+from Lab_Project.src.libreria.utils import *
+from Lab_Project.src.libreria.bow import BoW
+from Lab_Project.src.libreria.dataset import Dataset
+from Lab_Project.src.libreria.image_classifier import ImageClassifier
 import time
 from tqdm import tqdm
 import sys
 import pickle
-from funciones_descriptores import *
+from Lab_Project.src.libreria.funciones_descriptores import *
 
 if __name__ == "__main__":
     # Rutas de las imágenes

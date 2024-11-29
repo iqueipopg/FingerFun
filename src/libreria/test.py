@@ -1,6 +1,8 @@
 import cv2
 from picamera2 import Picamera2
 
+# ESTO NO SE PARA QUE SE USA
+
 def stream_video():
     picam = Picamera2()
     picam.preview_configuration.main.size=(1280, 720)

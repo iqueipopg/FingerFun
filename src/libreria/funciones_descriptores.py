@@ -1,15 +1,11 @@
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-from utils import *
+from Lab_Project.src.libreria.utils import *
 from bow import BoW
 from dataset import Dataset
 from image_classifier import ImageClassifier
-import time
-from tqdm import tqdm
-import sys
-import pickle
-from glob import glob
+
 
 
 def show_image(imgs, num=None):

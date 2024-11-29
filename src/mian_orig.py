@@ -4,7 +4,7 @@ import numpy as np
 import math
 import time
 import os
-import funciones as f
+import libreria.funciones as f
 
 # Configurar MediaPipe Hands
 mp_hands = mp.solutions.hands
