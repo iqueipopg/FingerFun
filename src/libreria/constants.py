@@ -30,7 +30,9 @@ upper_blue = np.array([130, 255, 255])  # H:130, S:255, V:255
 
 image_folder = "figures"
 
-opencv_images = f.load_images_from_folder(image_folder)
+opencv_images, names = f.load_images_from_folder(image_folder)
 
 global nivel
 nivel = 0
+puntuacion_maxima = 0
+rondas_jugadas = 0

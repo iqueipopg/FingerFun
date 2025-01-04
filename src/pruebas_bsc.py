@@ -8,18 +8,15 @@ from libreria.constants import *
 
 
 if __name__ == "__main__":
+    puntuacion_maxima = 0
+    rondas_jugadas = -1
+    running = True
+    primera_partida = True
+    contador = 0
+    nivel = 1
 
     # opencv_images = f.load_images_from_folder("figures")
-    directorio = "images/output"
-    if os.path.exists(directorio) and os.path.isdir(directorio):
-        try:
-            shutil.rmtree(directorio)
-            print(f"El directorio {directorio} ha sido eliminado.")
-        except OSError as e:
-            print(f"Error al eliminar el directorio: {e}")
-    else:
-        print(f"El directorio {directorio} no existe o no es un directorio.")
-
+    f.limpiar_imagenes()    
     while cap.isOpened():
         ret, frame = cap.read()
         frame = cv2.flip(frame, 1)
@@ -50,7 +47,7 @@ if __name__ == "__main__":
                 trajectory.append((pred_x, pred_y))
                 cv2.circle(frame, (pred_x, pred_y), 10, (0, 255, 0), -1)
 
-                if len(trajectory) > 100:
+                if len(trajectory) > 125:
                     trajectory.pop(0)
 
             for i in range(1, len(trajectory)):
@@ -59,18 +56,39 @@ if __name__ == "__main__":
         # Mostrar el frame
         cv2.imshow("Shape Detection", frame)
 
+
+
+
         # Detectar teclas
         key = cv2.waitKey(1) & 0xFF
-        if key == ord("q"):  # Salir con 'q'
+
+        # INICIAR PARTIDA
+        if key == ord("a") and primera_partida == True: # Iniciar partida con 'a'
+            secuencia = f.inicio_partida(running, opencv_images, names, puntuacion_maxima, rondas_jugadas)
+            contador = 0
+            primera_partida = False
+            if secuencia == False:
+                break 
+
+        # SALIR DEL JUEGO
+        if key == ord("q"): 
             break
-        elif key == 32:  # Borrar trayectoria con espacio (ASCII 32)
+
+        # BORAR TRAYECTORIA
+        elif key == 32: 
             print("Trayectoria borrada")
             trajectory.clear()
-        elif key == ord("p"):  # que coincida
-            print(f"Pasando al siguiente nivel: {nivel + 1}")
-            nivel += 1
-            f.gestionar_niveles(nivel, opencv_images)
-        elif key == 13:
+        
+        # PARCHE PARA PASAR DE NIVEL
+        # elif key == ord("p"):  # que coincida
+        #     print(f"Pasando al siguiente nivel: {nivel + 1}")
+        #     nivel += 1
+        #     secuencia = f.gestionar_niveles(nivel, opencv_images, names)
+        #     print(secuencia)
+
+
+        # VALIDAR FIGURA
+        elif key == 13: # Guardar trayectoria con Enter
             print("Guardando y borrando trayectoria")
             time.sleep(0.5)
             cont += 1
@@ -79,15 +97,12 @@ if __name__ == "__main__":
             for i in range(1, len(trajectory)):
                 cv2.line(frame, trajectory[i - 1], trajectory[i], (255, 0, 0), 2)
 
-            # path = os.getcwd()
-            # dest = os.path.join(path, '..', 'images')
-
             if not os.path.exists("images/output"):
                 os.makedirs("images/output/screenshots")
                 os.makedirs("images/output/masks")
                 os.makedirs("images/output/shapes")
-            # Guardar la imagen con trayectoria
 
+            # Guardar la imagen con trayectoria
             cv2.imwrite(f"images/output/screenshots/screenshot{cont}.png", frame)
             mask = f.create_mask(frame, lower_blue, upper_blue)
             cv2.imwrite(
@@ -99,10 +114,38 @@ if __name__ == "__main__":
             img_with_shapes, fig = f.detect_geometric_shapes(mask)
             cv2.imwrite(f"images/output/shapes/shape{cont}.png", img_with_shapes)
 
+            print(fig, secuencia[contador])
+            print('nivel', nivel, 'contador', contador)
+
+            if fig == secuencia[contador]:
+                print((fig, secuencia[contador]), 'OK')
+                contador += 1
+            else:
+                print((fig, secuencia[contador]), 'FALSE')
+                print('DERROTA')
+                if nivel > puntuacion_maxima:
+                    puntuacion_maxima = nivel
+                rondas_jugadas += 1
+
+                # f.superponer_imagen_fullscreen(cap,"images/defeat.jpg") 
+                time.sleep(2)
+                running = False
+
+
+            if contador + 1 == nivel:
+                print(f'Nivel {nivel} finalizado.')
+                nivel += 1
+                print(f"Pasando al siguiente nivel: {nivel}")
+                secuencia = f.gestionar_niveles(nivel, opencv_images, names)
+                contador = 0
+                print(secuencia)
+                if nivel > puntuacion_maxima:
+                    puntuacion_maxima = nivel
+                rondas_jugadas += 1
+
             # Limpiar la trayectoria
             trajectory.clear()
             print(f"Figura detectada: {fig}")
-
     cap.release()
     cv2.destroyAllWindows()
     hands.close()
