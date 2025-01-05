@@ -1,7 +1,7 @@
 import cv2
 import mediapipe as mp
 import numpy as np
-import libreria.funciones as f
+import os
 
 # Configurar MediaPipe Hands
 mp_hands = mp.solutions.hands
@@ -30,7 +30,21 @@ upper_blue = np.array([130, 255, 255])  # H:130, S:255, V:255
 
 image_folder = "figures"
 
-opencv_images, names = f.load_images_from_folder(image_folder)
+
+def load_images_from_folder(folder):
+    folder = os.path.join(".", "images", "figures")
+    images = []
+    names = []
+    for filename in os.listdir(folder):
+        name = filename[:-4]
+        img = cv2.imread(os.path.join(folder, filename))
+        if img is not None:
+            images.append(img)
+            names.append(name)
+    return images, names
+
+
+opencv_images, names = load_images_from_folder(image_folder)
 
 global nivel
 nivel = 0
