@@ -29,7 +29,7 @@ lower_blue = np.array([110, 150, 150])  # H:110, S:150, V:150
 upper_blue = np.array([130, 255, 255])  # H:130, S:255, V:255
 
 image_folder = "figures"
-
+password_folder = "passwords"
 
 def load_images_from_folder(folder):
     folder = os.path.join(".", "images", "figures")
@@ -45,6 +45,9 @@ def load_images_from_folder(folder):
 
 
 opencv_images, names = load_images_from_folder(image_folder)
+passwords, _ = load_images_from_folder(password_folder)
+
+mapeo_nombres = {"BSC": "BELTRÁN SÁNCHEZ", "IQL": "IGNACIO QUEIPO", "EVS": "ERIK VELASCO"}
 
 global nivel
 nivel = 0

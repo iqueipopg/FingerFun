@@ -6,17 +6,24 @@ import numpy as np
 import libreria.funciones as f
 from libreria.constants import *
 
+# Asegúrate de que la cámara esté inicializada
+cap = cv2.VideoCapture(0)  # Usar la cámara por defecto
+if not cap.isOpened():
+    print("Error: No se pudo acceder a la cámara.")
+    exit()
+
 
 if __name__ == "__main__":
     puntuacion_maxima = 0
     rondas_jugadas = -1
+    desbloquedao = False
+    vidas = 5  # Número de vidas
     running = True
     primera_partida = True
     contador = 0
     nivel = 1
     secuencia = []  # Para almacenar las secuencias de figuras a detectar
 
-    # opencv_images = f.load_images_from_folder("figures")
     f.limpiar_imagenes()
     while cap.isOpened():
         ret, frame = cap.read()
@@ -34,7 +41,6 @@ if __name__ == "__main__":
                 index_finger_tip = hand_landmarks.landmark[
                     mp_hands.HandLandmark.INDEX_FINGER_TIP
                 ]
-
                 h, w, _ = frame.shape
                 x = int(index_finger_tip.x * w)
                 y = int(index_finger_tip.y * h)
@@ -54,14 +60,34 @@ if __name__ == "__main__":
             for i in range(1, len(trajectory)):
                 cv2.line(frame, trajectory[i - 1], trajectory[i], (255, 0, 0), 2)
 
-        # Mostrar el frame
+        # Mostrar el nivel en la parte derecha de la pantalla
+        nivel_texto = f"Nivel: {nivel}"
+        (w, h), _ = cv2.getTextSize(nivel_texto, cv2.FONT_HERSHEY_SIMPLEX, 1, 2)
+        cv2.putText(
+            frame,
+            nivel_texto,
+            (frame.shape[1] - w - 10, 30),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            1,
+            (255, 255, 255),
+            2,
+            cv2.LINE_AA,
+        )
+
+        # Mostrar los corazones (vidas) en la parte superior izquierda
+        for i in range(vidas):
+            f.draw_heart(
+                frame, 10 + (i * 40), 10
+            )  # Posición ajustada a la esquina superior izquierda
+
+        # Mostrar el frame con el nivel y las vidas
         cv2.imshow("Shape Detection", frame)
 
         # Detectar teclas
         key = cv2.waitKey(1) & 0xFF
 
         # INICIAR PARTIDA
-        if key == ord("a") and primera_partida == True:  # Iniciar partida con 'a'
+        if key == ord("a") and primera_partida == True and desbloquedao == True:  # Iniciar partida con 'a'
             secuencia = f.inicio_partida(
                 running, opencv_images, names, puntuacion_maxima, rondas_jugadas
             )
@@ -74,79 +100,24 @@ if __name__ == "__main__":
         if key == ord("q"):
             break
 
+        # DESBLOQUEAR JUEGO
+        if key == ord("b"):
+            
+            passwords = f.obtener_paths("passwords")
+            print(passwords)
+            usuario = f.detectar_contraseñas(passwords, frame)
+            if usuario != None:
+                print(f'¡Bienvenido a FingerFun {mapeo_nombres[usuario]}!')
+                desbloquedao = True
+            else:
+                print("Contraseña incorrecta. ")
+
         # BORAR TRAYECTORIA
-        elif key == 32:
+        elif key == 32 and desbloquedao == True:  # Borrar trayectoria con espacio
             print("Trayectoria borrada")
             trajectory.clear()
 
-        # PARCHE PARA PASAR DE NIVEL
-        # elif key == ord("p"):  # que coincida
-        #     print(f"Pasando al siguiente nivel: {nivel + 1}")
-        #     nivel += 1
-        #     secuencia = f.gestionar_niveles(nivel, opencv_images, names)
-        #     print(secuencia)
-
-        # VALIDAR FIGURA
-        # elif key == 13:  # Guardar trayectoria con Enter
-        #     print("Guardando y borrando trayectoria")
-        #     time.sleep(0.5)
-        #     cont += 1
-
-        #     # Dibujar la trayectoria antes de guardar
-        #     for i in range(1, len(trajectory)):
-        #         cv2.line(frame, trajectory[i - 1], trajectory[i], (255, 0, 0), 2)
-
-        #     if not os.path.exists("images/output"):
-        #         os.makedirs("images/output/screenshots")
-        #         os.makedirs("images/output/masks")
-        #         os.makedirs("images/output/shapes")
-
-        #     # Guardar la imagen con trayectoria
-        #     cv2.imwrite(f"images/output/screenshots/screenshot{cont}.png", frame)
-        #     mask = f.create_mask(frame, lower_blue, upper_blue)
-        #     cv2.imwrite(
-        #         f"images/output/masks/mask{cont}.png",
-        #         mask,
-        #     )
-
-        #     # Detectar las formas geométricas en la imagen guardada
-        #     img_with_shapes, fig = f.detect_geometric_shapes2(
-        #         mask, opencv_images, names
-        #     )
-        #     cv2.imwrite(f"images/output/shapes/shape{cont}.png", img_with_shapes)
-
-        #     print(fig, secuencia[contador])
-        #     print("nivel", nivel, "contador", contador)
-
-        #     if fig == secuencia[contador]:
-        #         print((fig, secuencia[contador]), "OK")
-        #         contador += 1
-        #     else:
-        #         print((fig, secuencia[contador]), "FALSE")
-        #         print("DERROTA")
-        #         if nivel > puntuacion_maxima:
-        #             puntuacion_maxima = nivel
-        #         rondas_jugadas += 1
-
-        #         # f.superponer_imagen_fullscreen(cap,"images/defeat.jpg")
-        #         time.sleep(2)
-        #         running = False
-
-        #     if contador + 1 == nivel:
-        #         print(f"Nivel {nivel} finalizado.")
-        #         nivel += 1
-        #         print(f"Pasando al siguiente nivel: {nivel}")
-        #         secuencia = f.gestionar_niveles(nivel, opencv_images, names)
-        #         contador = 0
-        #         print(secuencia)
-        #         if nivel > puntuacion_maxima:
-        #             puntuacion_maxima = nivel
-        #         rondas_jugadas += 1
-
-        #     # Limpiar la trayectoria
-        #     trajectory.clear()
-        #     print(f"Figura detectada: {fig}")
-        elif key == 13:  # Guardar trayectoria con Enter
+        elif key == 13 and desbloquedao == True:  # Guardar trayectoria con Enter
             print("Guardando y borrando trayectoria")
             time.sleep(0.5)
 
@@ -160,15 +131,18 @@ if __name__ == "__main__":
                 figura_detectada, secuencia, contador, nivel
             )
 
-            if not continuar:  # Si el jugador pierde
-                if nivel > puntuacion_maxima:
-                    puntuacion_maxima = nivel
-                rondas_jugadas += 1
-                time.sleep(2)
-                running = False  # Finaliza la partida si el jugador pierde
+            if not continuar:  # Si el jugador falla
+                vidas -= 1  # Restar una vida
+                print(f"Has fallado. Te quedan {vidas} vidas.")
+
+                # Si el jugador se queda sin vidas
+                if vidas == 0:
+                    print("¡Has perdido todas las vidas! Game Over.")
+                    break  # Terminar el juego
 
             # Limpiar la trayectoria
             trajectory.clear()
+
     cap.release()
     cv2.destroyAllWindows()
     hands.close()

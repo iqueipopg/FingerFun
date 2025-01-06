@@ -164,6 +164,15 @@ def detect_geometric_shapes(img):
 
     return img, fig
 
+def obtener_paths(carpeta):
+    carpeta = os.path.join(".", "images", carpeta)
+    archivos = []
+    for archivo in os.listdir(carpeta):
+        # Crear el path completo y verificar que sea un archivo
+        path_completo = os.path.join(carpeta, archivo)
+        if os.path.isfile(path_completo):
+            archivos.append(path_completo)
+    return archivos
 
 # Función para calcular el ángulo entre tres puntos
 def calculate_angle(p1, p2, p3):
@@ -469,3 +478,35 @@ def draw_heart(frame, x, y, scale=0.1):
 
     frame[y : y + heart_h, x : x + heart_w] = roi
     return frame
+
+
+def detectar_contraseñas(plantillas, imagen_capturada, umbral = 50):
+    imagen_capturada = cv2.flip(imagen_capturada, 1)
+    imagen_gris = cv2.cvtColor(imagen_capturada, cv2.COLOR_BGR2GRAY)
+    orb = cv2.ORB_create()
+    kp_captura, des_captura = orb.detectAndCompute(imagen_gris, None)
+
+    bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
+
+    for plantilla_path in plantillas:
+        plantilla = cv2.imread(plantilla_path, cv2.IMREAD_GRAYSCALE)
+
+        kp_plantilla, des_plantilla = orb.detectAndCompute(plantilla, None)
+
+        # Comparar características si existen descriptores
+        if des_captura is not None and des_plantilla is not None:
+            matches = bf.match(des_captura, des_plantilla)
+            matches = sorted(matches, key=lambda x: x.distance)
+
+            umbral_buenas = umbral  
+            buenas_coincidencias = [m for m in matches if m.distance < 50]
+
+            nombre = plantilla_path.split("\\")[-1].split(".")[0].split("_")[-1].upper()
+            print(f"Comparando con {nombre}: {len(buenas_coincidencias)} buenas coincidencias")
+
+            umbral_buenas = 110 if ("B" in nombre or "S" in nombre) else umbral
+            if len(buenas_coincidencias) > umbral_buenas:
+                # print(f"Contraseña correcta. Coincide con {nombre}")
+                return plantilla_path.split("_")[-1].split(".")[0].upper()
+
+    return None
