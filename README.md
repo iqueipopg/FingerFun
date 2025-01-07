@@ -54,6 +54,7 @@ Additionally, **Finger Fun** uses computer vision techniques to track the player
 The challenge increases with each round, requiring faster and more precise drawing skills to win!
 
 ## 📂 Project Structure
+
 The structure of this project is organized as follows:
 
 
@@ -77,7 +78,43 @@ The structure of this project is organized as follows:
 This structure is designed to efficiently organize the game’s resources and code, separating images, code, and documentation files to facilitate development and maintenance of the project.
 
 ## 🖥️ Technologies Used
-_(Pending details)_
+
+This game, **Finger Fun**, leverages a combination of hardware and software technologies to deliver an interactive experience. The system operates using a **Raspberry Pi** connected to a camera, while a computer communicates with the Raspberry Pi to run the game. Here are the key technologies used in the development of the project:
+
+### Hardware
+- **Raspberry Pi**: The game runs on a Raspberry Pi, which processes the data from the camera and runs the necessary software to track and interpret the player’s finger movements.
+- **Camera**: A camera connected to the Raspberry Pi is used for real-time tracking of the player's finger movements, which are essential for drawing the geometric shapes.
+
+### Software
+- **Python**: The code for the game is written in Python, utilizing a number of powerful libraries to handle computer vision, system interactions, and file operations.
+
+### Libraries Used
+- **OpenCV (`cv2`)**: A powerful library used for computer vision tasks such as pattern recognition, real-time tracking of the player's finger movements, and drawing the geometric shapes on the screen.
+- **Time**: A standard Python library used for managing time-related tasks, such as implementing delays and managing game rounds.
+- **OS**: The `os` library is used for interacting with the operating system, including file management (creating, moving, and deleting files or directories).
+- **Shutil**: A standard Python library for file operations, such as copying, removing, or moving files and directories.
+- **NumPy**: A library for numerical computing, used to handle arrays and perform matrix operations required for pattern recognition and manipulation.
+- **MediaPipe**: A cross-platform library developed by Google, used for hand tracking in this game. It helps with accurately tracking the movement of the player's finger to replicate geometric shapes.
+- **Custom Library (`libreria`)**: This project uses a custom library called `libreria`, which contains additional functions (`funciones`) and constants used throughout the game to manage specific tasks, such as pattern recognition and game logic.
+  
+  - **`libreria.funciones`**: A collection of custom functions to help with various game-related tasks, such as handling user input and processing geometric shapes.
+  - **`libreria.constants`**: A file containing constants used throughout the game to maintain consistency and avoid hardcoding values in multiple places.
+
+The combination of these hardware and software components creates an interactive and responsive game, where players can use their finger movements to draw geometric patterns and advance through levels.
 
 ## 🙌 Credits
-_(Pending details)_
+
+This project was developed as part of the **Computer Vision I** course at **Universidad Pontificia Comillas, ICAI**, for the **Engineering Mathematics** program. We would like to extend our sincere thanks to everyone who contributed to the success of this project.
+
+### Special Thanks To:
+- **Erik Velasco**: Our professor, for providing the slides, materials, and guidance throughout the course. His teachings were fundamental to the development of this project.
+- **Universidad Pontificia Comillas, ICAI**: For providing the educational environment and resources that made this project possible.
+- **MediaPipe Documentation**: For providing extensive resources and examples on hand tracking and computer vision techniques that were key to the implementation of the game mechanics.
+- **OpenCV Documentation**: For offering comprehensive guides and examples that helped us implement image processing and computer vision tasks essential for the game.
+  
+### Developers:
+- **Beltrán Sánchez Careaga**
+- **Ignacio Queipo de Llano Pérez-Gascón**
+
+We would also like to acknowledge all the open-source libraries and resources that made this project possible. Without these contributions, the development of the game would not have been as efficient or smooth.
+
