@@ -1,16 +1,3 @@
-% This template aims to simplify and improve the (Xe)LaTeX template provided
-% by the TU Delft. Original template by TU Delft. Rewritten template by Daan
-% Zwaneveld (https://dzwaneveld.github.io)
-%
-% This template by Daan Zwaneveld is licensed under CC BY-NC 4.0. To view a
-% copy of this license, visit https://creativecommons.org/licenses/by-nc/4.0/.
-% No attribution is required in PDF outputs created using this template.
-
-%% ----------------------------------------------------------------------
-%%    Setting up the class, main packages and basic definitions
-%% ----------------------------------------------------------------------
-
-%% Class is based on the default book class and options will be passed
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{tudelft-report}[05-09-2024 v1.7.1 TU Delft Report Class]
 
@@ -92,7 +79,7 @@
 %% Format the chapter titles and spacing
 \titleformat{\chapter}[display]
     {\flushright}
-    {\fontsize{96}{96}\selectfont\largetitlestyle\textcolor[HTML]{4884d6}{\thechapter}}
+    {\fontsize{96}{96}\selectfont\largetitlestyle\thechapter}
     {0pt}
     {\Huge\titlestyle}
 \titlespacing*{\chapter}{0pt}{0pt}{2\baselineskip}
@@ -171,7 +158,7 @@
 
         %% Add the logo in the bottom left
         \node[above right=10mm] at (current page.south west) {%
-            \includegraphics[width=0.5\linewidth]{Lab_4/template/figures/logo-white.pdf}};
+            \includegraphics[width=0.35\linewidth]{CAPS/logo-icai-2.png}};
 
         %% Add the banner with the title, subtitle, subject and author(s)
         \node[below=2cm,fill=black!85,minimum width={\paperwidth},inner ysep=25pt,opacity=0.6,text opacity=1] at (current page.north) {%
