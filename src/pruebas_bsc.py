@@ -104,7 +104,7 @@ if __name__ == "__main__":
         if key == ord("b"):
             
             passwords = f.obtener_paths("passwords")
-            print(passwords)
+            # print(passwords)
             usuario = f.detectar_contraseñas(passwords, frame)
             if usuario != None:
                 print(f'¡Bienvenido a FingerFun {mapeo_nombres[usuario]}!')

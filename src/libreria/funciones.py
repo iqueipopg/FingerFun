@@ -21,6 +21,22 @@ from libreria.constants import *
 # }
 
 
+def load_images_from_folder(folder):
+    folder = os.path.join(".", "images", folder)
+    images = []
+    names = []
+    for filename in os.listdir(folder):
+        name = filename[:-4]
+        img = cv2.imread(os.path.join(folder, filename))
+        if img is not None:
+            images.append(img)
+            names.append(name)
+    return images, names
+
+def write_image(imgs):
+    for i, img in enumerate(imgs):
+        cv2.imwrite(f"corner_{i}.jpg", img)
+
 def eliminar_readonly(func, path, excinfo):
     os.chmod(path, 0o777)  # Cambia los permisos a escritura
     func(path)  # Reintenta eliminar
