@@ -3,6 +3,19 @@ import mediapipe as mp
 import numpy as np
 import os
 
+def load_images_from_folder(folder):
+    folder = os.path.join(".", "images", folder)
+    images = []
+    names = []
+    for filename in os.listdir(folder):
+        name = filename[:-4]
+        img = cv2.imread(os.path.join(folder, filename))
+        if img is not None:
+            images.append(img)
+            names.append(name)
+    return images, names
+
+
 # Configurar MediaPipe Hands
 mp_hands = mp.solutions.hands
 hands = mp_hands.Hands(min_detection_confidence=0.5, min_tracking_confidence=0.5)
@@ -30,22 +43,11 @@ upper_blue = np.array([130, 255, 255])  # H:130, S:255, V:255
 
 image_folder = "figures"
 password_folder = "passwords"
-
-def load_images_from_folder(folder):
-    folder = os.path.join(".", "images", "figures")
-    images = []
-    names = []
-    for filename in os.listdir(folder):
-        name = filename[:-4]
-        img = cv2.imread(os.path.join(folder, filename))
-        if img is not None:
-            images.append(img)
-            names.append(name)
-    return images, names
-
+calibration_folder = "calibration"
 
 opencv_images, names = load_images_from_folder(image_folder)
 passwords, _ = load_images_from_folder(password_folder)
+calibration, _ = load_images_from_folder(calibration_folder)
 
 mapeo_nombres = {"BSC": "BELTRÁN SÁNCHEZ", "IQL": "IGNACIO QUEIPO", "EVS": "ERIK VELASCO"}
 
