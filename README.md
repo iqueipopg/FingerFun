@@ -54,7 +54,27 @@ Additionally, **Finger Fun** uses computer vision techniques to track the player
 The challenge increases with each round, requiring faster and more precise drawing skills to win!
 
 ## 📂 Project Structure
-_(Pending details)_
+The structure of this project is organized as follows:
+
+
+- **`assets/`**: Folder containing static files necessary for the game's operation. This includes resources like images or files that may be used by the system during development.
+
+- **`images/`**: Contains images used within the project, with specific subdirectories:
+  - **`figures/`**: Images related to the geometric shapes that the player must replicate during the game.
+  - **`passwords/`**: Images related to the password verification system.
+  - **`plantillas_passwords/`**: Templates of the password patterns used for unlocking the game.
+
+- **`src/`**: Contains the source code of the game. This directory holds Python files and other files related to the game's logic.
+  - **`libreria/`**: Contains additional functions or libraries used in the project. It includes a subdirectory `__pycache__/` for storing compiled Python files.
+  - **`__pycache__/`**: Folder that stores the automatically generated `.pyc` files by Python to optimize code execution.
+
+- **`template/`**: Folder containing files and templates used to generate project documents, such as reports or documentation.
+  - **`appendix/`**: Appendix files, likely containing additional documentation or technical details.
+  - **`figures/`**: Images or diagrams used in the documentation.
+  - **`frontmatter/`**: Preliminary information likely used in the configuration of the generated documentation.
+  - **`mainmatter/`**: The main body of the project documentation.
+
+This structure is designed to efficiently organize the game’s resources and code, separating images, code, and documentation files to facilitate development and maintenance of the project.
 
 ## 🖥️ Technologies Used
 _(Pending details)_
