@@ -5,7 +5,7 @@ import random
 import shutil
 import numpy as np
 import copy
-import matplotlib.pyplot as plt 
+import matplotlib.pyplot as plt
 from libreria.constants import *
 
 # # Cargar las imágenes de referencia
@@ -35,9 +35,11 @@ def load_images_from_folder(folder):
             names.append(name)
     return images, names
 
+
 def write_image(imgs):
     for i, img in enumerate(imgs):
         cv2.imwrite(f"corner_{i}.jpg", img)
+
 
 def eliminar_readonly(func, path, excinfo):
     os.chmod(path, 0o777)  # Cambia los permisos a escritura
@@ -53,15 +55,6 @@ def create_mask(img, lower, upper):
 
 
 def detect_geometric_shapes2(img, opencv_images, names):
-    """
-    Detecta y clasifica las figuras geométricas en una imagen usando template matching.
-
-    :param img: Imagen de entrada (en blanco y negro) que contiene la figura a detectar.
-    :param opencv_images: Lista de imágenes de referencia de las figuras.
-    :param names: Nombres de las figuras correspondientes a las imágenes en opencv_images.
-
-    :return: Imagen con la figura detectada y su nombre.
-    """
     # Convertir la imagen de entrada a escala de grises y asegurarse de que es uint8
     if len(img.shape) == 3:  # Si la imagen tiene más de un canal (RGB)
         img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -116,72 +109,6 @@ def detect_geometric_shapes2(img, opencv_images, names):
     return img, detected_figure
 
 
-# Función para detectar y clasificar figuras geométricas
-def detect_geometric_shapes(img):
-    # Encontrar los contornos en la imagen binaria
-    fig = "No figure detected"
-    contours, _ = cv2.findContours(img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
-    for contour in contours:
-        # Aproximar el contorno a un polígono
-        epsilon = 0.04 * cv2.arcLength(contour, True)
-        approx = cv2.approxPolyDP(contour, epsilon, True)
-
-        # Obtener el centro del contorno para el texto
-        M = cv2.moments(contour)
-        if M["m00"] != 0:
-            cX = int(M["m10"] / M["m00"])
-            cY = int(M["m01"] / M["m00"])
-        else:
-            cX, cY = 0, 0
-
-        # Clasificación de la figura según el número de vértices
-        if len(approx) == 3:
-            # Triángulo
-            cv2.drawContours(img, [approx], -1, (0, 255, 0), -1)
-            cv2.putText(
-                img, "Triangulo", (cX, cY), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2
-            )
-            fig = "Triangle"
-        if len(approx) == 4:
-            # Cuadrado o Rombo
-            # Verificar si el contorno es un cuadrado o rombo
-            x, y, w, h = cv2.boundingRect(approx)
-            aspect_ratio = w / float(h)
-
-            if 0.95 <= aspect_ratio <= 1.05:
-                # Es un cuadrado (relación de aspecto cercana a 1)
-                cv2.drawContours(img, [approx], -1, (0, 255, 0), -1)
-                cv2.putText(
-                    img,
-                    "Cuadrado",
-                    (cX, cY),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    1,
-                    (255, 0, 0),
-                    2,
-                )
-                fig = "Square"
-            else:
-                # Es un rombo (si no es un cuadrado)
-                cv2.drawContours(img, [approx], -1, (0, 255, 0), -1)
-                cv2.putText(
-                    img, "Rombo", (cX, cY), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2
-                )
-                fig = "Diamond"
-
-        elif len(approx) > 4:
-            # Círculo
-            # Aproximar la forma a un círculo
-            (x, y), radius = cv2.minEnclosingCircle(contour)
-            cv2.drawContours(img, [approx], -1, (0, 255, 0), -1)
-            cv2.putText(
-                img, "Circulo", (cX, cY), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2
-            )
-            fig = "Circle"
-
-    return img, fig
-
 def obtener_paths(carpeta):
     carpeta = os.path.join(".", "images", carpeta)
     archivos = []
@@ -191,50 +118,6 @@ def obtener_paths(carpeta):
         if os.path.isfile(path_completo):
             archivos.append(path_completo)
     return archivos
-
-# Función para calcular el ángulo entre tres puntos
-def calculate_angle(p1, p2, p3):
-    # Calcular los vectores
-    v1 = np.array([p1[0][0] - p2[0][0], p1[0][1] - p2[0][1]])
-    v2 = np.array([p3[0][0] - p2[0][0], p3[0][1] - p2[0][1]])
-
-    # Calcular el ángulo entre los dos vectores
-    dot_product = np.dot(v1, v2)
-    magnitude_v1 = np.linalg.norm(v1)
-    magnitude_v2 = np.linalg.norm(v2)
-
-    # Calcular el ángulo en radianes y convertirlo a grados
-    angle = np.degrees(np.arccos(dot_product / (magnitude_v1 * magnitude_v2)))
-    return angle
-
-
-# Función para verificar si la mano está cerrada
-def is_fist(hand_landmarks, mp_hands, threshold=0.1):
-    # Calcular si todos los dedos están doblados (distancias entre la yema y la base del dedo)
-    finger_tips = [
-        mp_hands.HandLandmark.THUMB_TIP,
-        mp_hands.HandLandmark.INDEX_FINGER_TIP,
-        mp_hands.HandLandmark.MIDDLE_FINGER_TIP,
-        mp_hands.HandLandmark.RING_FINGER_TIP,
-        mp_hands.HandLandmark.PINKY_TIP,
-    ]
-    finger_pips = [
-        mp_hands.HandLandmark.THUMB_IP,
-        mp_hands.HandLandmark.INDEX_FINGER_PIP,
-        mp_hands.HandLandmark.MIDDLE_FINGER_PIP,
-        mp_hands.HandLandmark.RING_FINGER_PIP,
-        mp_hands.HandLandmark.PINKY_PIP,
-    ]
-
-    closed_fingers = 0
-    for tip, pip in zip(finger_tips, finger_pips):
-        tip_y = hand_landmarks.landmark[tip].y
-        pip_y = hand_landmarks.landmark[pip].y
-        if tip_y > pip_y + threshold:  # Si la yema está más cerca de la palma
-            closed_fingers += 1
-
-    # Considerar que el puño está cerrado si 4 dedos están doblados
-    return closed_fingers >= 4
 
 
 # GESTIONAR NIVELES
@@ -498,7 +381,7 @@ def draw_heart(frame, x, y, scale=0.1):
     return frame
 
 
-def detectar_contraseñas(plantillas, imagen_capturada, umbral = 50):
+def detectar_contraseñas(plantillas, imagen_capturada, umbral=50):
     imagen_capturada = cv2.flip(imagen_capturada, 1)
     imagen_gris = cv2.cvtColor(imagen_capturada, cv2.COLOR_BGR2GRAY)
     orb = cv2.ORB_create()
@@ -516,11 +399,13 @@ def detectar_contraseñas(plantillas, imagen_capturada, umbral = 50):
             matches = bf.match(des_captura, des_plantilla)
             matches = sorted(matches, key=lambda x: x.distance)
 
-            umbral_buenas = umbral  
+            umbral_buenas = umbral
             buenas_coincidencias = [m for m in matches if m.distance < 50]
 
             nombre = plantilla_path.split("\\")[-1].split(".")[0].split("_")[-1].upper()
-            print(f"Comparando con {nombre}: {len(buenas_coincidencias)} buenas coincidencias")
+            print(
+                f"Comparando con {nombre}: {len(buenas_coincidencias)} buenas coincidencias"
+            )
 
             umbral_buenas = 110 if ("B" in nombre or "S" in nombre) else umbral
             if len(buenas_coincidencias) > umbral_buenas:
@@ -531,12 +416,16 @@ def detectar_contraseñas(plantillas, imagen_capturada, umbral = 50):
 
 
 def get_chessboard_points(chessboard_shape, dx, dy):
-    chessboard_points = np.zeros((chessboard_shape[0]*chessboard_shape[1], 3), np.float32)
-    chessboard_points[:,:2] = np.mgrid[0:chessboard_shape[0], 0:chessboard_shape[1]].T.reshape(-1, 2)
+    chessboard_points = np.zeros(
+        (chessboard_shape[0] * chessboard_shape[1], 3), np.float32
+    )
+    chessboard_points[:, :2] = np.mgrid[
+        0 : chessboard_shape[0], 0 : chessboard_shape[1]
+    ].T.reshape(-1, 2)
     chessboard_points[:, 0] *= dx
     chessboard_points[:, 1] *= dy
     return chessboard_points
- 
+
 
 def calibrar_camara(calibration):
     imgs = calibration
@@ -544,18 +433,24 @@ def calibrar_camara(calibration):
     ret_list = []
     criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.01)
     for img in imgs:
-        cor = cv2.findChessboardCorners(img, (8,6))
+        cor = cv2.findChessboardCorners(img, (8, 6))
         corners.append(cor)
 
     corners_copy = copy.deepcopy(corners)
     criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.01)
     imgs_gray = [cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) for img in imgs]
 
-    corners_refined = [cv2.cornerSubPix(i, cor[1], (8, 6), (-1, -1), criteria) if cor[0] else [] for i, cor in zip(imgs_gray, corners_copy)]
+    corners_refined = [
+        cv2.cornerSubPix(i, cor[1], (8, 6), (-1, -1), criteria) if cor[0] else []
+        for i, cor in zip(imgs_gray, corners_copy)
+    ]
 
     imgs_copy = copy.deepcopy(imgs)
 
-    imgs_corners = [cv2.drawChessboardCorners(img, (8,6), cor[1], cor[0]) if cor[0] else img for img, cor in zip(imgs_copy, corners)]
+    imgs_corners = [
+        cv2.drawChessboardCorners(img, (8, 6), cor[1], cor[0]) if cor[0] else img
+        for img, cor in zip(imgs_copy, corners)
+    ]
     os.makedirs("images/calibration/corners", exist_ok=True)
     for i in range(len(imgs_corners)):
         cv2.imwrite(f"images/calibration/corners/corners_{i}.jpg", imgs_corners[i])
@@ -565,7 +460,9 @@ def calibrar_camara(calibration):
     valid_corners = [cor[1] for cor in corners if cor[0]]
     valid_corners = np.asarray(valid_corners, dtype=np.float32)
 
-    rms, intrinsics, dist_coeffs, rvecs, tvecs = cv2.calibrateCamera([chessboard_points]*len(valid_corners), valid_corners, (8,6), None, None)
+    rms, intrinsics, dist_coeffs, rvecs, tvecs = cv2.calibrateCamera(
+        [chessboard_points] * len(valid_corners), valid_corners, (8, 6), None, None
+    )
     # extrinsics = list(map(lambda rvec, tvec: np.hstack((cv2.Rodrigues(rvec)[0], tvec)), rvecs, tvecs))
 
     return intrinsics, dist_coeffs, rms, corners, chessboard_points
@@ -573,19 +470,21 @@ def calibrar_camara(calibration):
 
 def numero_imgs_optimo(corners, chessboard_points):
     # Calculate RMS for number of images
-    image_counts = range(2, len(corners)+1)
+    image_counts = range(2, len(corners) + 1)
     rms_errors = []
     for i in image_counts:
         valid_corners = [cor[1] for cor in corners[:i] if cor[0]]
         valid_corners = np.asarray(valid_corners, dtype=np.float32)
-        rms, _, _, _, _ = cv2.calibrateCamera([chessboard_points]*len(valid_corners), valid_corners, (8,6), None, None)
+        rms, _, _, _, _ = cv2.calibrateCamera(
+            [chessboard_points] * len(valid_corners), valid_corners, (8, 6), None, None
+        )
         rms_errors.append(rms)
 
-    # Plot 
+    # Plot
     plt.figure(figsize=(10, 6))
-    plt.plot(image_counts, rms_errors, marker='o')
-    plt.title('RMS Reprojection Error vs. Number of Images')
-    plt.xlabel('Number of Images Used')
-    plt.ylabel('RMS Reprojection Error')
+    plt.plot(image_counts, rms_errors, marker="o")
+    plt.title("RMS Reprojection Error vs. Number of Images")
+    plt.xlabel("Number of Images Used")
+    plt.ylabel("RMS Reprojection Error")
     plt.grid(True)
     plt.show()
