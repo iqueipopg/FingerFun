@@ -25,6 +25,31 @@ In **Finger Fun**, the player is tasked with replicating a sequence of geometric
 
 Additionally, **Finger Fun** uses computer vision techniques to track the player's finger or object movements, ensuring the accuracy of the drawn patterns.
 
+## 🛠️ Installation
+
+To set up and run **Finger Fun**, follow the steps below to install the necessary dependencies and get started with the game.
+
+### Prerequisites
+Make sure you have the following installed on your system:
+- **Python 3.7** or higher
+- **pip** (Python's package installer)
+- **Raspberry Pi** (for real-time finger tracking with the camera)
+
+### Steps for Installation
+
+1. Clone the repository:
+   ```sh
+   git clone https://github.com/iqueipopg/FingerFun.git
+   ```
+2. Install dependencies:
+   ```sh
+   pip install -r requirements.txt
+   ```
+3. Run the game:
+   ```sh
+   python src/main_ff.py
+   ```
+   
 ## 🎮 How to Play
 
 ### 🔓 Unlocking the Game
