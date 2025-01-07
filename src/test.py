@@ -1,23 +1,30 @@
-
-# FICHERO PARA EJECUTAR PRUEBAS DE LA CÁMARA EN LA RASPBERRY PI
-
 import cv2
-from picamera2 import Picamera2
+import os 
 
-def stream_video():
-    picam = Picamera2()
-    picam.preview_configuration.main.size=(1280, 720)
-    picam.preview_configuration.main.format="RGB888"
-    picam.preview_configuration.align()
-    picam.configure("preview")
-    picam.start()
+# FICHERO PARA GUARDAR IMÁGENES PARA CALIBRACIÓN DE CÁMARA
+
+def main():
+    cap = cv2.VideoCapture(0)
+    contador = 0
 
     while True:
-        frame = picam.capture_array()
-        cv2.imshow("picam", frame)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        ret, frame = cap.read()
+
+        cv2.imshow('Camara', frame)
+
+        key = cv2.waitKey(1)
+    
+        if key == 13:  
+            os.makedirs('capturas', exist_ok=True)
+            cv2.imwrite(f'capturas/imagen_{contador}.jpg', frame)
+            contador += 1
+
+
+        if key == ord('q'):
             break
+
+    cap.release()
     cv2.destroyAllWindows()
 
 if __name__ == "__main__":
-    stream_video()
+    main()
