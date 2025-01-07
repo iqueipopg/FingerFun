@@ -57,7 +57,6 @@ The challenge increases with each round, requiring faster and more precise drawi
 
 The structure of this project is organized as follows:
 
-
 - **`assets/`**: Folder containing static files necessary for the game's operation. This includes resources like images or files that may be used by the system during development.
 
 - **`images/`**: Contains images used within the project, with specific subdirectories:
@@ -65,7 +64,10 @@ The structure of this project is organized as follows:
   - **`passwords/`**: Images related to the password verification system.
   - **`plantillas_passwords/`**: Templates of the password patterns used for unlocking the game.
 
-- **`src/`**: Contains the source code of the game. This directory holds Python files and other files related to the game's logic.
+- **`src/`**: Contains the source code of the game. This directory holds Python files and other files related to the game's logic. It includes the following key Python files:
+  - **`main_calibration.py`**: This file is responsible for the camera calibration process, ensuring accurate tracking of the player's movements.
+  - **`main_ff.py`**: The core file for running the game itself. It handles the game flow, including the pattern recognition and interaction with the player.
+  - **`test.py`**: A testing file used to verify the accuracy of the camera calibration and ensure that the system is functioning correctly.
   - **`libreria/`**: Contains additional functions or libraries used in the project. It includes a subdirectory `__pycache__/` for storing compiled Python files.
   - **`__pycache__/`**: Folder that stores the automatically generated `.pyc` files by Python to optimize code execution.
 
